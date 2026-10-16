@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 5s       # resolución suficiente para ver incidentes de pocos minutos
+  evaluation_interval: 5s
+  external_labels:
+    lab: monitoreo-cloud-utp
+
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  - job_name: catalogo-app
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["app:8000"]
+        labels:
+          service: catalogo
+
+  - job_name: node
+    static_configs:
+      - targets: ["node-exporter:9100"]

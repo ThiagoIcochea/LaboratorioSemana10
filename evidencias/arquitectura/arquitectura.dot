@@ -1,0 +1,43 @@
+digraph arquitectura {
+  graph [rankdir=TB, fontname="Helvetica", fontsize=11, pad=0.3, nodesep=0.45, ranksep=0.55, bgcolor="white",
+         label="Arquitectura del laboratorio de monitoreo (flujo de métricas)", labelloc=t, fontsize=15];
+  node  [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, fillcolor="#EEF3FB", color="#3A6EA5"];
+  edge  [fontname="Helvetica", fontsize=9, color="#555555"];
+
+  subgraph cluster_env {
+    label="Entorno de ejecución (GitHub Codespaces con Docker Compose / VM Linux del laboratorio)";
+    style="rounded,dashed"; color="#999999"; fontsize=10;
+
+    carga  [label="Generador de tráfico\nscripts/loadgen.py\n8 req/s (70% productos,\n20% checkout, 10% /)", fillcolor="#FFF6E5", color="#C98A1B"];
+
+    subgraph cluster_app {
+      label="Servicio monitorizado"; style="rounded"; color="#3A6EA5";
+      app  [label="App «catalogo» (Flask + Gunicorn)\napp:8000\n/api/productos  /api/checkout\n/health  /admin/fault"];
+      dep  [label="Dependencia simulada\ninventario-db\n(modo de fallo controlado)", fillcolor="#FBEAEA", color="#B23B3B"];
+      met  [label="Endpoint /metrics\nprometheus_client\n(contadores, histogramas, gauges)"];
+    }
+    node_e [label="node_exporter v1.9.1\nnode-exporter:9100\nCPU, memoria, disco del host"];
+
+    subgraph cluster_prom {
+      label="Prometheus v3.5.0  (prometheus:9090)"; style="rounded"; color="#E6522C";
+      scrape [label="Recolección (pull)\nscrape_interval = 5 s", fillcolor="#FDEDE8", color="#E6522C"];
+      tsdb   [label="TSDB local\nretención 2 d\nseries = métrica + etiquetas", shape=cylinder, fillcolor="#FDEDE8", color="#E6522C"];
+      promql [label="Motor PromQL\nreglas de registro (SLI)", fillcolor="#FDEDE8", color="#E6522C"];
+      rules  [label="Reglas de alerta\nalerts.yml (eval. 5 s)\nTasaErroresAlta, LatenciaP95Alta,\nDependenciaLenta, CPUHostAlta…", fillcolor="#FDEDE8", color="#E6522C"];
+    }
+    grafana [label="Grafana 12.1.1\ngrafana:3000\nDashboard provisionado\n(12 paneles)", fillcolor="#FFF1DC", color="#F46800"];
+  }
+  sre [label="Diagnóstico y respuesta\n(análisis de 3+ señales,\nacción correctiva/preventiva)", fillcolor="#E9F6EC", color="#2E8B57"];
+
+  carga -> app [label="HTTP"];
+  app -> dep [label="consulta por petición"];
+  app -> met [style=dashed, label="instrumentación"];
+  met -> scrape [label="GET /metrics"];
+  node_e -> scrape [label="GET /metrics"];
+  scrape -> tsdb [label="muestras (t, valor)"];
+  tsdb -> promql;
+  promql -> rules;
+  promql -> grafana [label="HTTP API /api/v1/query_range"];
+  rules -> sre [label="alertas firing"];
+  grafana -> sre [label="paneles"];
+}

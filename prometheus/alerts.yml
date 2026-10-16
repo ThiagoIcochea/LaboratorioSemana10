@@ -1,0 +1,69 @@
+groups:
+  - name: sli-catalogo
+    interval: 5s
+    rules:
+      # Reglas de registro (SLI) reutilizadas por alertas y dashboards
+      - record: job:app_http_requests:rate1m
+        expr: sum by (job) (rate(app_http_requests_total{endpoint!="/metrics"}[1m]))
+      - record: job:app_http_errors:ratio_rate1m
+        expr: |
+          sum by (job) (rate(app_http_requests_total{status=~"5.."}[1m]))
+          /
+          sum by (job) (rate(app_http_requests_total{endpoint!="/metrics"}[1m]))
+      - record: job:app_http_latency_seconds:p95_1m
+        expr: histogram_quantile(0.95, sum by (job, le) (rate(app_http_request_duration_seconds_bucket[1m])))
+      - record: job:app_dependency_latency_seconds:p95_1m
+        expr: histogram_quantile(0.95, sum by (job, dependency, le) (rate(app_dependency_duration_seconds_bucket[1m])))
+
+  - name: alertas-catalogo
+    rules:
+      - alert: ObjetivoCaido
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus no puede recolectar {{ $labels.job }} ({{ $labels.instance }})"
+
+      - alert: TasaErroresAlta
+        expr: job:app_http_errors:ratio_rate1m > 0.05
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Más del 5 % de respuestas 5xx en {{ $labels.job }}"
+          description: "Ratio actual: {{ $value | humanizePercentage }}"
+
+      - alert: LatenciaP95Alta
+        expr: job:app_http_latency_seconds:p95_1m > 0.5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latencia p95 > 500 ms en {{ $labels.job }}"
+          description: "p95 actual: {{ $value | humanizeDuration }}"
+
+      - alert: DependenciaLenta
+        expr: job:app_dependency_latency_seconds:p95_1m > 0.25
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 de {{ $labels.dependency }} > 250 ms"
+          description: "Posible degradación de dependencia; revisar antes de escalar recursos."
+
+      - alert: CPUHostAlta
+        expr: 1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) > 0.85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU del host > 85 % durante 2 minutos"
+
+      - alert: MemoriaHostBaja
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memoria disponible del host < 10 %"
