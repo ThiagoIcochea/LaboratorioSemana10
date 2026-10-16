@@ -71,6 +71,18 @@ evidencias/                       arquitectura, baseline, incidente, recuperacio
 informe/                          Informe Word y PDF
 ```
 
-## Resultados
+## Resultados (ejecución real del 16/10/2026, hora de Lima)
 
-Ver la sección *Resultados* del informe y `resultados/resumen_fases.csv`.
+| Indicador | Línea base (18:31:47–18:37:48) | Incidente (18:37:48–18:42:50) | Recuperación (18:42:50–18:48:50) |
+|---|---|---|---|
+| Peticiones/s | 7,99 | 8,01 | 8,00 |
+| Errores 5xx | 0,035 % | 32,38 % | 0,18 % |
+| Latencia p95 HTTP | 54,7 ms | 2 195,8 ms | 55,9 ms |
+| p95 de inventario-db | 46,7 ms | 1 449,4 ms | 46,6 ms |
+| CPU del host (media) | 3,8 % | 2,7 % | 2,6 % |
+| Memoria disponible mínima | 90,1 % | 91,6 % | 92,0 % |
+| Alertas firing | ninguna | DependenciaLenta, LatenciaP95Alta, TasaErroresAlta | se resolvieron ~55 s después del corte |
+
+**Diagnóstico:** la degradación se originó en la dependencia `inventario-db` (latencia ×31 en el mismo intervalo que la
+latencia HTTP y los errores; la ruta `/`, que no la usa, no cambió). La hipótesis de presión de CPU/memoria quedó
+descartada por los datos. Detalle en `resultados/` y en el informe.

@@ -1,0 +1,170 @@
+{
+  "status": "success",
+  "data": {
+    "groups": [
+      {
+        "name": "alertas-catalogo",
+        "file": "/home/claude/laboratoriosemana10/prometheus/alerts.yml",
+        "rules": [
+          {
+            "state": "inactive",
+            "name": "ObjetivoCaido",
+            "query": "up == 0",
+            "duration": 30,
+            "keepFiringFor": 0,
+            "labels": {
+              "severity": "critical"
+            },
+            "annotations": {
+              "summary": "Prometheus no puede recolectar {{ $labels.job }} ({{ $labels.instance }})"
+            },
+            "alerts": [],
+            "health": "ok",
+            "evaluationTime": 0.000247994,
+            "lastEvaluation": "2026-10-16T18:49:32.585920592-05:00",
+            "type": "alerting"
+          },
+          {
+            "state": "inactive",
+            "name": "TasaErroresAlta",
+            "query": "job:app_http_errors:ratio_rate1m > 0.05",
+            "duration": 60,
+            "keepFiringFor": 0,
+            "labels": {
+              "severity": "critical"
+            },
+            "annotations": {
+              "description": "Ratio actual: {{ $value | humanizePercentage }}",
+              "summary": "Más del 5 % de respuestas 5xx en {{ $labels.job }}"
+            },
+            "alerts": [],
+            "health": "ok",
+            "evaluationTime": 0.000106676,
+            "lastEvaluation": "2026-10-16T18:49:32.58617393-05:00",
+            "type": "alerting"
+          },
+          {
+            "state": "inactive",
+            "name": "LatenciaP95Alta",
+            "query": "job:app_http_latency_seconds:p95_1m > 0.5",
+            "duration": 60,
+            "keepFiringFor": 0,
+            "labels": {
+              "severity": "warning"
+            },
+            "annotations": {
+              "description": "p95 actual: {{ $value | humanizeDuration }}",
+              "summary": "Latencia p95 > 500 ms en {{ $labels.job }}"
+            },
+            "alerts": [],
+            "health": "ok",
+            "evaluationTime": 4.2413e-05,
+            "lastEvaluation": "2026-10-16T18:49:32.586283624-05:00",
+            "type": "alerting"
+          },
+          {
+            "state": "inactive",
+            "name": "DependenciaLenta",
+            "query": "job:app_dependency_latency_seconds:p95_1m > 0.25",
+            "duration": 60,
+            "keepFiringFor": 0,
+            "labels": {
+              "severity": "warning"
+            },
+            "annotations": {
+              "description": "Posible degradación de dependencia; revisar antes de escalar recursos.",
+              "summary": "p95 de {{ $labels.dependency }} > 250 ms"
+            },
+            "alerts": [],
+            "health": "ok",
+            "evaluationTime": 3.4527e-05,
+            "lastEvaluation": "2026-10-16T18:49:32.58632785-05:00",
+            "type": "alerting"
+          },
+          {
+            "state": "inactive",
+            "name": "CPUHostAlta",
+            "query": "1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) > 0.85",
+            "duration": 120,
+            "keepFiringFor": 0,
+            "labels": {
+              "severity": "warning"
+            },
+            "annotations": {
+              "summary": "CPU del host > 85 % durante 2 minutos"
+            },
+            "alerts": [],
+            "health": "ok",
+            "evaluationTime": 0.000112005,
+            "lastEvaluation": "2026-10-16T18:49:32.586364919-05:00",
+            "type": "alerting"
+          },
+          {
+            "state": "inactive",
+            "name": "MemoriaHostBaja",
+            "query": "node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.1",
+            "duration": 120,
+            "keepFiringFor": 0,
+            "labels": {
+              "severity": "warning"
+            },
+            "annotations": {
+              "summary": "Memoria disponible del host < 10 %"
+            },
+            "alerts": [],
+            "health": "ok",
+            "evaluationTime": 5.5702e-05,
+            "lastEvaluation": "2026-10-16T18:49:32.586478432-05:00",
+            "type": "alerting"
+          }
+        ],
+        "interval": 5,
+        "limit": 0,
+        "evaluationTime": 0.00068648,
+        "lastEvaluation": "2026-10-16T18:49:32.585849408-05:00"
+      },
+      {
+        "name": "sli-catalogo",
+        "file": "/home/claude/laboratoriosemana10/prometheus/alerts.yml",
+        "rules": [
+          {
+            "name": "job:app_http_requests:rate1m",
+            "query": "sum by (job) (rate(app_http_requests_total{endpoint!=\"/metrics\"}[1m]))",
+            "health": "ok",
+            "evaluationTime": 0.000399073,
+            "lastEvaluation": "2026-10-16T18:49:32.447478007-05:00",
+            "type": "recording"
+          },
+          {
+            "name": "job:app_http_errors:ratio_rate1m",
+            "query": "sum by (job) (rate(app_http_requests_total{status=~\"5..\"}[1m])) / sum by (job) (rate(app_http_requests_total{endpoint!=\"/metrics\"}[1m]))",
+            "health": "ok",
+            "evaluationTime": 0.000188946,
+            "lastEvaluation": "2026-10-16T18:49:32.447885719-05:00",
+            "type": "recording"
+          },
+          {
+            "name": "job:app_http_latency_seconds:p95_1m",
+            "query": "histogram_quantile(0.95, sum by (job, le) (rate(app_http_request_duration_seconds_bucket[1m])))",
+            "health": "ok",
+            "evaluationTime": 0.000326659,
+            "lastEvaluation": "2026-10-16T18:49:32.448077453-05:00",
+            "type": "recording"
+          },
+          {
+            "name": "job:app_dependency_latency_seconds:p95_1m",
+            "query": "histogram_quantile(0.95, sum by (job, dependency, le) (rate(app_dependency_duration_seconds_bucket[1m])))",
+            "health": "ok",
+            "evaluationTime": 0.000209902,
+            "lastEvaluation": "2026-10-16T18:49:32.448409085-05:00",
+            "type": "recording"
+          }
+        ],
+        "interval": 5,
+        "limit": 0,
+        "evaluationTime": 0.001213556,
+        "lastEvaluation": "2026-10-16T18:49:32.447408344-05:00"
+      }
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "alerta": "DependenciaLenta",
+    "estado": "pending",
+    "primero": "2026-10-16 18:38:02",
+    "ultimo": "2026-10-16 18:38:57",
+    "primero_unix": 1792193882,
+    "ultimo_unix": 1792193937
+  },
+  {
+    "alerta": "LatenciaP95Alta",
+    "estado": "pending",
+    "primero": "2026-10-16 18:38:02",
+    "ultimo": "2026-10-16 18:38:57",
+    "primero_unix": 1792193882,
+    "ultimo_unix": 1792193937
+  },
+  {
+    "alerta": "TasaErroresAlta",
+    "estado": "pending",
+    "primero": "2026-10-16 18:38:07",
+    "ultimo": "2026-10-16 18:39:02",
+    "primero_unix": 1792193887,
+    "ultimo_unix": 1792193942
+  },
+  {
+    "alerta": "DependenciaLenta",
+    "estado": "firing",
+    "primero": "2026-10-16 18:39:02",
+    "ultimo": "2026-10-16 18:43:47",
+    "primero_unix": 1792193942,
+    "ultimo_unix": 1792194227
+  },
+  {
+    "alerta": "LatenciaP95Alta",
+    "estado": "firing",
+    "primero": "2026-10-16 18:39:02",
+    "ultimo": "2026-10-16 18:43:47",
+    "primero_unix": 1792193942,
+    "ultimo_unix": 1792194227
+  },
+  {
+    "alerta": "TasaErroresAlta",
+    "estado": "firing",
+    "primero": "2026-10-16 18:39:07",
+    "ultimo": "2026-10-16 18:43:42",
+    "primero_unix": 1792193947,
+    "ultimo_unix": 1792194222
+  }
+]

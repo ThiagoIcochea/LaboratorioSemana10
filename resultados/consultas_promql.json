@@ -1,0 +1,1040 @@
+[
+  {
+    "id": "Q1",
+    "objetivo": "Disponibilidad del objetivo: mínimo de up en la fase",
+    "promql": "min_over_time(up{job=\"catalogo-app\"}[361s])",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 1.0
+      }
+    ]
+  },
+  {
+    "id": "Q2a",
+    "objetivo": "Peticiones atendidas en la fase (incremento del contador)",
+    "promql": "sum(increase(app_http_requests_total[361s]))",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 2886.002182051282
+      }
+    ]
+  },
+  {
+    "id": "Q2b",
+    "objetivo": "Tasa media de peticiones por segundo en la fase",
+    "promql": "sum(rate(app_http_requests_total[361s]))",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 7.9944658782584
+      }
+    ]
+  },
+  {
+    "id": "Q2c",
+    "objetivo": "Tasa por endpoint y código de estado",
+    "promql": "sum by (endpoint, status) (rate(app_http_requests_total[361s]))",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {
+          "endpoint": "/api/productos",
+          "status": "200"
+        },
+        "valor": 5.616666666666667
+      },
+      {
+        "labels": {
+          "endpoint": "/",
+          "status": "200"
+        },
+        "valor": 0.7972222222222223
+      },
+      {
+        "labels": {
+          "endpoint": "/api/checkout",
+          "status": "200"
+        },
+        "valor": 1.577777777777778
+      },
+      {
+        "labels": {
+          "endpoint": "/api/productos",
+          "status": "503"
+        },
+        "valor": 0.002799211591732367
+      }
+    ]
+  },
+  {
+    "id": "Q3",
+    "objetivo": "Proporción de respuestas 5xx en la fase",
+    "promql": "sum(increase(app_http_requests_total{status=~\"5..\"}[361s])) / sum(increase(app_http_requests_total[361s]))",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.0003501436661760044
+      }
+    ]
+  },
+  {
+    "id": "Q4a",
+    "objetivo": "Latencia media HTTP en la fase",
+    "promql": "sum(rate(app_http_request_duration_seconds_sum[361s])) / sum(rate(app_http_request_duration_seconds_count[361s]))",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.02410601957207429
+      }
+    ]
+  },
+  {
+    "id": "Q4b",
+    "objetivo": "Percentil 95 de latencia HTTP en toda la fase",
+    "promql": "histogram_quantile(0.95, sum by (le) (rate(app_http_request_duration_seconds_bucket[361s])))",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.05473270440251561
+      }
+    ]
+  },
+  {
+    "id": "Q4c",
+    "objetivo": "p95 de latencia por endpoint (agrupación by)",
+    "promql": "histogram_quantile(0.95, sum by (endpoint, le) (rate(app_http_request_duration_seconds_bucket[361s])))",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {
+          "endpoint": "/api/productos"
+        },
+        "valor": 0.04681761006289308
+      },
+      {
+        "labels": {
+          "endpoint": "/"
+        },
+        "valor": 0.0095
+      },
+      {
+        "labels": {
+          "endpoint": "/api/checkout"
+        },
+        "valor": 0.09106918238993711
+      }
+    ]
+  },
+  {
+    "id": "Q5",
+    "objetivo": "Máximo temporal del p95 (ventana 1 m) dentro de la fase",
+    "promql": "max_over_time(job:app_http_latency_seconds:p95_1m[361s])",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {
+          "job": "catalogo-app"
+        },
+        "valor": 0.0717948717948718
+      }
+    ]
+  },
+  {
+    "id": "Q6",
+    "objetivo": "p95 de latencia de inventario-db en la fase",
+    "promql": "histogram_quantile(0.95, sum by (le) (rate(app_dependency_duration_seconds_bucket[361s])))",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.04671654197838736
+      }
+    ]
+  },
+  {
+    "id": "Q7",
+    "objetivo": "Errores de la dependencia (incremento) por motivo",
+    "promql": "sum(increase(app_dependency_errors_total[361s])) or vector(0)",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 1.0105153846153845
+      }
+    ]
+  },
+  {
+    "id": "Q8a",
+    "objetivo": "Uso medio de CPU del host (1 - idle), avg por instancia",
+    "promql": "1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[361s]))",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:9100"
+        },
+        "valor": 0.03754929577464794
+      }
+    ]
+  },
+  {
+    "id": "Q8b",
+    "objetivo": "Máximo del uso de CPU del host (ventanas de 1 m) en la fase",
+    "promql": "max_over_time((1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])))[361s:5s])",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.07636363636363719
+      }
+    ]
+  },
+  {
+    "id": "Q8c",
+    "objetivo": "CPU consumida por el proceso de la app (núcleos)",
+    "promql": "rate(process_cpu_seconds_total{job=\"catalogo-app\"}[361s])",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 0.011527777777777777
+      }
+    ]
+  },
+  {
+    "id": "Q9a",
+    "objetivo": "Mínimo de memoria disponible del host (ratio)",
+    "promql": "min_over_time((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)[361s:5s])",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:9100",
+          "job": "node"
+        },
+        "valor": 0.9010663656972728
+      }
+    ]
+  },
+  {
+    "id": "Q9b",
+    "objetivo": "Máximo de memoria residente de la app (MB)",
+    "promql": "max_over_time(process_resident_memory_bytes{job=\"catalogo-app\"}[361s]) / 1024 / 1024",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 32.20703125
+      }
+    ]
+  },
+  {
+    "id": "Q10",
+    "objetivo": "Concurrencia máxima (peticiones en curso)",
+    "promql": "max_over_time(app_http_inflight_requests[361s])",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 1.0
+      }
+    ]
+  },
+  {
+    "id": "Q11",
+    "objetivo": "Máxima utilización de E/S de disco (fracción de tiempo ocupado)",
+    "promql": "max_over_time(max(rate(node_disk_io_time_seconds_total[1m]))[361s:5s])",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.011054545454545447
+      }
+    ]
+  },
+  {
+    "id": "Q12",
+    "objetivo": "Alertas en estado firing durante la fase",
+    "promql": "max_over_time(ALERTS{alertstate=\"firing\"}[361s])",
+    "fase": "linea_base",
+    "evaluado_en": "2026-10-16 18:37:48",
+    "ventana": "361s",
+    "resultado": []
+  },
+  {
+    "id": "Q1",
+    "objetivo": "Disponibilidad del objetivo: mínimo de up en la fase",
+    "promql": "min_over_time(up{job=\"catalogo-app\"}[302s])",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 1.0
+      }
+    ]
+  },
+  {
+    "id": "Q2a",
+    "objetivo": "Peticiones atendidas en la fase (incremento del contador)",
+    "promql": "sum(increase(app_http_requests_total[302s]))",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 2417.703315254237
+      }
+    ]
+  },
+  {
+    "id": "Q2b",
+    "objetivo": "Tasa media de peticiones por segundo en la fase",
+    "promql": "sum(rate(app_http_requests_total[302s]))",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 8.005640116735886
+      }
+    ]
+  },
+  {
+    "id": "Q2c",
+    "objetivo": "Tasa por endpoint y código de estado",
+    "promql": "sum by (endpoint, status) (rate(app_http_requests_total[302s]))",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "endpoint": "/api/productos",
+          "status": "200"
+        },
+        "valor": 3.8406779661016954
+      },
+      {
+        "labels": {
+          "endpoint": "/",
+          "status": "200"
+        },
+        "valor": 0.7457627118644069
+      },
+      {
+        "labels": {
+          "endpoint": "/api/checkout",
+          "status": "200"
+        },
+        "valor": 0.8271186440677967
+      },
+      {
+        "labels": {
+          "endpoint": "/api/productos",
+          "status": "503"
+        },
+        "valor": 1.654646155573016
+      },
+      {
+        "labels": {
+          "endpoint": "/api/checkout",
+          "status": "503"
+        },
+        "valor": 0.9374346391289706
+      }
+    ]
+  },
+  {
+    "id": "Q3",
+    "objetivo": "Proporción de respuestas 5xx en la fase",
+    "promql": "sum(increase(app_http_requests_total{status=~\"5..\"}[302s])) / sum(increase(app_http_requests_total[302s]))",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.32378182842408954
+      }
+    ]
+  },
+  {
+    "id": "Q4a",
+    "objetivo": "Latencia media HTTP en la fase",
+    "promql": "sum(rate(app_http_request_duration_seconds_sum[302s])) / sum(rate(app_http_request_duration_seconds_count[302s]))",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 1.059911982267342
+      }
+    ]
+  },
+  {
+    "id": "Q4b",
+    "objetivo": "Percentil 95 de latencia HTTP en toda la fase",
+    "promql": "histogram_quantile(0.95, sum by (le) (rate(app_http_request_duration_seconds_bucket[302s])))",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 2.195846645367411
+      }
+    ]
+  },
+  {
+    "id": "Q4c",
+    "objetivo": "p95 de latencia por endpoint (agrupación by)",
+    "promql": "histogram_quantile(0.95, sum by (endpoint, le) (rate(app_http_request_duration_seconds_bucket[302s])))",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "endpoint": "/api/productos"
+        },
+        "valor": 1.4490577889447236
+      },
+      {
+        "labels": {
+          "endpoint": "/"
+        },
+        "valor": 0.0095
+      },
+      {
+        "labels": {
+          "endpoint": "/api/checkout"
+        },
+        "valor": 2.4900958466453673
+      }
+    ]
+  },
+  {
+    "id": "Q5",
+    "objetivo": "Máximo temporal del p95 (ventana 1 m) dentro de la fase",
+    "promql": "max_over_time(job:app_http_latency_seconds:p95_1m[302s])",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "job": "catalogo-app"
+        },
+        "valor": 2.263235294117646
+      }
+    ]
+  },
+  {
+    "id": "Q6",
+    "objetivo": "p95 de latencia de inventario-db en la fase",
+    "promql": "histogram_quantile(0.95, sum by (le) (rate(app_dependency_duration_seconds_bucket[302s])))",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 1.4493532740501212
+      }
+    ]
+  },
+  {
+    "id": "Q7",
+    "objetivo": "Errores de la dependencia (incremento) por motivo",
+    "promql": "sum(increase(app_dependency_errors_total[302s])) or vector(0)",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 780.8084
+      }
+    ]
+  },
+  {
+    "id": "Q8a",
+    "objetivo": "Uso medio de CPU del host (1 - idle), avg por instancia",
+    "promql": "1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[302s]))",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:9100"
+        },
+        "valor": 0.02698333333333336
+      }
+    ]
+  },
+  {
+    "id": "Q8b",
+    "objetivo": "Máximo del uso de CPU del host (ventanas de 1 m) en la fase",
+    "promql": "max_over_time((1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])))[302s:5s])",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.040727272727272945
+      }
+    ]
+  },
+  {
+    "id": "Q8c",
+    "objetivo": "CPU consumida por el proceso de la app (núcleos)",
+    "promql": "rate(process_cpu_seconds_total{job=\"catalogo-app\"}[302s])",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 0.011559322033898306
+      }
+    ]
+  },
+  {
+    "id": "Q9a",
+    "objetivo": "Mínimo de memoria disponible del host (ratio)",
+    "promql": "min_over_time((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)[302s:5s])",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:9100",
+          "job": "node"
+        },
+        "valor": 0.9162576985570983
+      }
+    ]
+  },
+  {
+    "id": "Q9b",
+    "objetivo": "Máximo de memoria residente de la app (MB)",
+    "promql": "max_over_time(process_resident_memory_bytes{job=\"catalogo-app\"}[302s]) / 1024 / 1024",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 33.62109375
+      }
+    ]
+  },
+  {
+    "id": "Q10",
+    "objetivo": "Concurrencia máxima (peticiones en curso)",
+    "promql": "max_over_time(app_http_inflight_requests[302s])",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 10.0
+      }
+    ]
+  },
+  {
+    "id": "Q11",
+    "objetivo": "Máxima utilización de E/S de disco (fracción de tiempo ocupado)",
+    "promql": "max_over_time(max(rate(node_disk_io_time_seconds_total[1m]))[302s:5s])",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.00043636363636363675
+      }
+    ]
+  },
+  {
+    "id": "Q12",
+    "objetivo": "Alertas en estado firing durante la fase",
+    "promql": "max_over_time(ALERTS{alertstate=\"firing\"}[302s])",
+    "fase": "incidente",
+    "evaluado_en": "2026-10-16 18:42:50",
+    "ventana": "302s",
+    "resultado": [
+      {
+        "labels": {
+          "alertname": "LatenciaP95Alta",
+          "alertstate": "firing",
+          "job": "catalogo-app",
+          "severity": "warning"
+        },
+        "valor": 1.0
+      },
+      {
+        "labels": {
+          "alertname": "DependenciaLenta",
+          "alertstate": "firing",
+          "dependency": "inventario-db",
+          "job": "catalogo-app",
+          "severity": "warning"
+        },
+        "valor": 1.0
+      },
+      {
+        "labels": {
+          "alertname": "TasaErroresAlta",
+          "alertstate": "firing",
+          "job": "catalogo-app",
+          "severity": "critical"
+        },
+        "valor": 1.0
+      }
+    ]
+  },
+  {
+    "id": "Q1",
+    "objetivo": "Disponibilidad del objetivo: mínimo de up en la fase",
+    "promql": "min_over_time(up{job=\"catalogo-app\"}[360s])",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 1.0
+      }
+    ]
+  },
+  {
+    "id": "Q2a",
+    "objetivo": "Peticiones atendidas en la fase (incremento del contador)",
+    "promql": "sum(increase(app_http_requests_total[360s]))",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 2880.0
+      }
+    ]
+  },
+  {
+    "id": "Q2b",
+    "objetivo": "Tasa media de peticiones por segundo en la fase",
+    "promql": "sum(rate(app_http_requests_total[360s]))",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 8.0
+      }
+    ]
+  },
+  {
+    "id": "Q2c",
+    "objetivo": "Tasa por endpoint y código de estado",
+    "promql": "sum by (endpoint, status) (rate(app_http_requests_total[360s]))",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "endpoint": "/api/productos",
+          "status": "200"
+        },
+        "valor": 5.509859154929578
+      },
+      {
+        "labels": {
+          "endpoint": "/",
+          "status": "200"
+        },
+        "valor": 0.8816901408450705
+      },
+      {
+        "labels": {
+          "endpoint": "/api/checkout",
+          "status": "200"
+        },
+        "valor": 1.5943661971830987
+      },
+      {
+        "labels": {
+          "endpoint": "/api/productos",
+          "status": "503"
+        },
+        "valor": 0.011267605633802818
+      },
+      {
+        "labels": {
+          "endpoint": "/api/checkout",
+          "status": "503"
+        },
+        "valor": 0.0028169014084507044
+      }
+    ]
+  },
+  {
+    "id": "Q3",
+    "objetivo": "Proporción de respuestas 5xx en la fase",
+    "promql": "sum(increase(app_http_requests_total{status=~\"5..\"}[360s])) / sum(increase(app_http_requests_total[360s]))",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.0017605633802816902
+      }
+    ]
+  },
+  {
+    "id": "Q4a",
+    "objetivo": "Latencia media HTTP en la fase",
+    "promql": "sum(rate(app_http_request_duration_seconds_sum[360s])) / sum(rate(app_http_request_duration_seconds_count[360s]))",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.023718599334157923
+      }
+    ]
+  },
+  {
+    "id": "Q4b",
+    "objetivo": "Percentil 95 de latencia HTTP en toda la fase",
+    "promql": "histogram_quantile(0.95, sum by (le) (rate(app_http_request_duration_seconds_bucket[360s])))",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.055900621118012285
+      }
+    ]
+  },
+  {
+    "id": "Q4c",
+    "objetivo": "p95 de latencia por endpoint (agrupación by)",
+    "promql": "histogram_quantile(0.95, sum by (endpoint, le) (rate(app_http_request_duration_seconds_bucket[360s])))",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "endpoint": "/api/productos"
+        },
+        "valor": 0.04671140939597315
+      },
+      {
+        "labels": {
+          "endpoint": "/"
+        },
+        "valor": 0.0095
+      },
+      {
+        "labels": {
+          "endpoint": "/api/checkout"
+        },
+        "valor": 0.09119565217391304
+      }
+    ]
+  },
+  {
+    "id": "Q5",
+    "objetivo": "Máximo temporal del p95 (ventana 1 m) dentro de la fase",
+    "promql": "max_over_time(job:app_http_latency_seconds:p95_1m[360s])",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "job": "catalogo-app"
+        },
+        "valor": 2.2656249999999996
+      }
+    ]
+  },
+  {
+    "id": "Q6",
+    "objetivo": "p95 de latencia de inventario-db en la fase",
+    "promql": "histogram_quantile(0.95, sum by (le) (rate(app_dependency_duration_seconds_bucket[360s])))",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.04662227074235808
+      }
+    ]
+  },
+  {
+    "id": "Q7",
+    "objetivo": "Errores de la dependencia (incremento) por motivo",
+    "promql": "sum(increase(app_dependency_errors_total[360s])) or vector(0)",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 5.070422535211268
+      }
+    ]
+  },
+  {
+    "id": "Q8a",
+    "objetivo": "Uso medio de CPU del host (1 - idle), avg por instancia",
+    "promql": "1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[360s]))",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:9100"
+        },
+        "valor": 0.025732394366196787
+      }
+    ]
+  },
+  {
+    "id": "Q8b",
+    "objetivo": "Máximo del uso de CPU del host (ventanas de 1 m) en la fase",
+    "promql": "max_over_time((1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])))[360s:5s])",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.03872727272727472
+      }
+    ]
+  },
+  {
+    "id": "Q8c",
+    "objetivo": "CPU consumida por el proceso de la app (núcleos)",
+    "promql": "rate(process_cpu_seconds_total{job=\"catalogo-app\"}[360s])",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 0.011492957746478873
+      }
+    ]
+  },
+  {
+    "id": "Q9a",
+    "objetivo": "Mínimo de memoria disponible del host (ratio)",
+    "promql": "min_over_time((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)[360s:5s])",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:9100",
+          "job": "node"
+        },
+        "valor": 0.9204511622023954
+      }
+    ]
+  },
+  {
+    "id": "Q9b",
+    "objetivo": "Máximo de memoria residente de la app (MB)",
+    "promql": "max_over_time(process_resident_memory_bytes{job=\"catalogo-app\"}[360s]) / 1024 / 1024",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 33.87109375
+      }
+    ]
+  },
+  {
+    "id": "Q10",
+    "objetivo": "Concurrencia máxima (peticiones en curso)",
+    "promql": "max_over_time(app_http_inflight_requests[360s])",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "instance": "localhost:8000",
+          "job": "catalogo-app",
+          "service": "catalogo"
+        },
+        "valor": 1.0
+      }
+    ]
+  },
+  {
+    "id": "Q11",
+    "objetivo": "Máxima utilización de E/S de disco (fracción de tiempo ocupado)",
+    "promql": "max_over_time(max(rate(node_disk_io_time_seconds_total[1m]))[360s:5s])",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {},
+        "valor": 0.000363636363636372
+      }
+    ]
+  },
+  {
+    "id": "Q12",
+    "objetivo": "Alertas en estado firing durante la fase",
+    "promql": "max_over_time(ALERTS{alertstate=\"firing\"}[360s])",
+    "fase": "recuperacion",
+    "evaluado_en": "2026-10-16 18:48:50",
+    "ventana": "360s",
+    "resultado": [
+      {
+        "labels": {
+          "alertname": "LatenciaP95Alta",
+          "alertstate": "firing",
+          "job": "catalogo-app",
+          "severity": "warning"
+        },
+        "valor": 1.0
+      },
+      {
+        "labels": {
+          "alertname": "DependenciaLenta",
+          "alertstate": "firing",
+          "dependency": "inventario-db",
+          "job": "catalogo-app",
+          "severity": "warning"
+        },
+        "valor": 1.0
+      },
+      {
+        "labels": {
+          "alertname": "TasaErroresAlta",
+          "alertstate": "firing",
+          "job": "catalogo-app",
+          "severity": "critical"
+        },
+        "valor": 1.0
+      }
+    ]
+  }
+]
