@@ -1,6 +1,6 @@
 # Laboratorio – Monitoreo en la nube y gestión de métricas en bases de datos de series temporales
 
-**Universidad Tecnológica del Perú (UTP)** · Curso: *Herramientas de Desarrollo Profesional TIC* · Docente: Dr. Eleodoro Orbegoso Carrera
+**Universidad Tecnológica del Perú (UTP)** · Curso: *Servicios Cloud* (sección 45104) · Laboratorio N.º 10 · Docente: Dr. Eleodoro Orbegoso Carrera
 **Estudiante:** Thiago Paolo Icochea Rodriguez
 
 Laboratorio de observabilidad con **Prometheus (recolección + TSDB) → PromQL → Grafana → reglas de alerta**, aplicado a un

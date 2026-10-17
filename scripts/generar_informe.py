@@ -245,8 +245,8 @@ SRC_UI = ("Fuente: captura auténtica de la interfaz web de Prometheus 3.5.0 del
 # ===========================================================================
 P("UNIVERSIDAD TECNOLÓGICA DEL PERÚ", bold=True, align="c", size=18, after=2, color="1F3864")
 P("Facultad de Ingeniería de Sistemas y Electrónica", align="c", size=12, after=30)
-P("Curso: Herramientas de Desarrollo Profesional TIC", bold=True, align="c", size=13, after=40)
-P("INFORME DE LABORATORIO N.º ____", bold=True, align="c", size=13, after=14, color="2E5597")
+P("Curso: Servicios Cloud", bold=True, align="c", size=13, after=40)
+P("INFORME DE LABORATORIO N.º 10", bold=True, align="c", size=13, after=14, color="2E5597")
 P("Monitoreo en la nube y gestión de métricas en bases de datos de series temporales",
   bold=True, align="c", size=20, after=8, color="1F3864")
 P("Análisis de un incidente de degradación de una dependencia con Prometheus, PromQL y Grafana",
@@ -257,10 +257,9 @@ ct.style = "Table Grid"
 ct.alignment = WD_TABLE_ALIGNMENT.CENTER
 for k, v in [("Docente", "Dr. Eleodoro Orbegoso Carrera"),
              ("Estudiante", "Icochea Rodriguez, Thiago Paolo"),
-             ("Otros integrantes", "______________________________________"),
-             ("Sección", "____________"),
-             ("Equipo", "____________"),
-             ("Número de laboratorio", "____"),
+             ("Sección", "45104"),
+             ("Equipo", "Trabajo individual"),
+             ("Número de laboratorio", "10"),
              ("Fecha de realización", "16/10/2026"),
              ("Repositorio", REPO)]:
     cells = ct.add_row().cells
